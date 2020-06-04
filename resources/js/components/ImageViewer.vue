@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute pin z-20 bg-white p-2" >
+  <div class="absolute inset-0 z-20 bg-white p-2" >
     <div
       class="relative w-full h-full"
       style="cursor: zoom-out;"
@@ -21,7 +21,7 @@
         :alt="image.description"
       >
 
-      <loading-graphic class="absolute pin z-5 flex flex-col items-center justify-center text-center" text="" />
+      <loading-graphic class="absolute inset-0 z-5 flex flex-col items-center justify-center text-center" text="" />
     </div>
   </div>
 </template>

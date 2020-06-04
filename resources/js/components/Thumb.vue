@@ -5,13 +5,13 @@
       style="cursor: zoom-in;"
       @click="$emit('open')"
     >
-      <div class="absolute pin z-0 flex items-center justify-center">
+      <div class="absolute inset-0 z-0 flex items-center justify-center">
         <div
-          class="absolute pin -z-1 rounded opacity-75"
+          class="absolute inset-0 -z-1 rounded opacity-75"
           :style="{ background: image.color }"
         />
 
-        <loading-graphic class="absolute pin -z-1 flex flex-col items-center justify-center text-center opacity-25" text="" />
+        <loading-graphic class="absolute inset-0 -z-1 flex flex-col items-center justify-center text-center opacity-25" text="" />
 
         <img
           class="asset-thumbnail w-full h-full rounded lazyload"
