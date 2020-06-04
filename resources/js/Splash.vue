@@ -50,9 +50,9 @@
           :class="{ 'overflow-y-scroll': ! zoomMode }"
           ref="imageContainer"
         >
-          <div class="absolute pin z-20 bg-white p-2" v-if="zoomMode">
+          <div class="absolute inset-0 z-20 bg-white p-2" v-if="zoomMode">
             <button
-              class="absolute pin-t pin-r z-10 m-2 btn btn-icon icon icon-resize-100"
+              class="absolute top-0 right-0 z-10 m-2 btn btn-icon icon icon-resize-100"
               @click="closeZoom"
             ></button>
 
@@ -63,10 +63,10 @@
               :alt="selectedImage.description"
             >
 
-            <loading-graphic class="absolute pin -z-1 flex flex-col items-center justify-center text-center" />
+            <loading-graphic class="absolute inset-0 -z-1 flex flex-col items-center justify-center text-center" />
           </div>
 
-          <div class="absolute pin p-2">
+          <div class="absolute inset-0 p-2">
             <div class="flex flex-wrap -mx-1">
               <div
                 v-for="image in images"
@@ -78,14 +78,14 @@
                   <button
                     class="
                       btn btn-icon icon icon-resize-full-screen
-                      absolute pin-t pin-r z-10 m-1 opacity-0 group-hover:opacity-100
+                      absolute top-0 right-0 z-10 m-1 opacity-0 group-hover:opacity-100
                     "
                     @click.stop="openZoom(image)"
                   ></button>
 
-                  <div class="absolute pin z-0 flex items-center justify-center">
+                  <div class="absolute inset-0 z-0 flex items-center justify-center">
                     <loading-graphic
-                      class="absolute pin -z-1 flex flex-col items-center justify-center text-center opacity-25"
+                      class="absolute inset-0 -z-1 flex flex-col items-center justify-center text-center opacity-25"
                       text=""
                     />
 

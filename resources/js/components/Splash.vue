@@ -43,7 +43,7 @@
             :class="{ 'overflow-y-scroll': ! selectedImage }"
             ref="imageContainer"
           >
-            <div class="absolute pin p-2">
+            <div class="absolute inset-0 p-2">
               <div class="flex flex-wrap -mx-1">
                 <thumb
                   v-for="image in filteredImages"
