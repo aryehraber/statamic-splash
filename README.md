@@ -1,4 +1,4 @@
-# Splash (Statamic 3)
+# Splash
 
 **Browse Unsplash images right from the CP.**
 
