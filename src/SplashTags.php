@@ -62,7 +62,7 @@ class SplashTags extends Tags
 
     protected function setImage($image = null)
     {
-        $this->image = $image ?: $this->image ?: $this->get('image');
+        $this->image = $image ?: $this->image ?: $this->params->get('image');
 
         return $this;
     }
@@ -83,17 +83,17 @@ class SplashTags extends Tags
     protected function getParams($defaults = [])
     {
         $params = array_filter([
-            'w' => $this->get(['w', 'width']),
-            'h' => $this->get(['h', 'height']),
-            'q' => $this->get(['q', 'quality']),
-            'fm' => $this->get(['fm', 'format']),
-            'dpr' => $this->get('dpr'),
-            'fit' => $this->get('fit'),
-            'crop' => $this->get('crop'),
-            'auto' => $this->get('auto'),
+            'w' => $this->params->get(['w', 'width']),
+            'h' => $this->params->get(['h', 'height']),
+            'q' => $this->params->get(['q', 'quality']),
+            'fm' => $this->params->get(['fm', 'format']),
+            'dpr' => $this->params->get('dpr'),
+            'fit' => $this->params->get('fit'),
+            'crop' => $this->params->get('crop'),
+            'auto' => $this->params->get('auto'),
         ]);
 
-        if ($size = $this->get('square')) {
+        if ($size = $this->params->get('square')) {
             $params['w'] = $size;
             $params['h'] = $size;
         }
