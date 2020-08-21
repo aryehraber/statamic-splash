@@ -13,7 +13,7 @@ composer require aryehraber/statamic-splash
 Publish the fieldtype assets & config file:
 
 ```
-php artisan vendor:publish --provider="AryehRaber\Splash\SplashServiceProvider"
+php please vendor:publish --tag=splash-config
 ```
 
 Once installed, you will need to add an Unsplash API `Access Key` to `config/splash.php`.

@@ -28,6 +28,7 @@
     "extra": {
         "statamic": {
             "name": "Splash",
+            "slug": "splash",
             "description": "Browse Unsplash images right from the CP.",
             "version": "1.0.2"
         },
