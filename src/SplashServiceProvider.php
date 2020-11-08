@@ -6,6 +6,8 @@ use Statamic\Providers\AddonServiceProvider;
 
 class SplashServiceProvider extends AddonServiceProvider
 {
+    protected $viewNamespace = 'splash';
+
     protected $fieldtypes = [
         SplashFieldtype::class,
     ];
