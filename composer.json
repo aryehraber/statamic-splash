@@ -30,7 +30,7 @@
             "name": "Splash",
             "slug": "splash",
             "description": "Browse Unsplash images right from the CP.",
-            "version": "1.0.4"
+            "version": "1.0.5"
         },
         "laravel": {
             "providers": [
