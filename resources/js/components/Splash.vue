@@ -39,7 +39,7 @@
           </div>
 
           <div
-            class="relative flex-1 w-full h-full"
+            class="relative z-10 flex-1 w-full h-full"
             :class="{ 'overflow-y-scroll': ! selectedImage }"
             ref="imageContainer"
           >
