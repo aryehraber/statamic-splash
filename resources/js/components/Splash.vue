@@ -214,6 +214,7 @@ export default {
     },
     select() {
       this.$emit('input', this.selectedImage)
+      this.pingUnsplash()
       this.closeBrowser()
     },
     removeImage() {
@@ -244,6 +245,13 @@ export default {
           this.loadMore()
         }
       }, 250))
+    },
+    pingUnsplash() {
+      if (! this.selectedImage) return
+
+      const params = { client_id: this.meta.access_key }
+
+      this.$axios.get(this.selectedImage.links.download_location, { params })
     },
   },
 
