@@ -5,8 +5,8 @@
     </button>
   </div>
 
-  <div class="asset-solo-container" v-else>
-    <div :title="value.description" class="asset-tile is-image" tabindex="0">
+  <div class="asset-solo-container asset-grid-listing" v-else>
+    <div :title="value.description" class="asset-tile col-span-2 is-image" tabindex="0">
       <div class="asset-thumb-container">
         <div class="asset-thumb">
           <img :src="value.urls.small" :alt="value.description" :title="value.description">
