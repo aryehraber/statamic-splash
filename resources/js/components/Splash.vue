@@ -74,7 +74,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-end z-20 p-2 bg-grey-20 border-t">
+        <div class="flex items-center justify-end z-20 p-2 bg-gray-200 border-t">
           <button class="btn" @click="closeBrowser">
             Cancel
           </button>
