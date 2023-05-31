@@ -29,8 +29,7 @@
         "statamic": {
             "name": "Splash",
             "slug": "splash",
-            "description": "Browse Unsplash images right from the CP.",
-            "version": "1.2.0"
+            "description": "Browse Unsplash images right from the CP."
         },
         "laravel": {
             "providers": [
