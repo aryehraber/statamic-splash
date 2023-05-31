@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue2'
 export default defineConfig({
   build: {
     manifest: false,
-    outDir: 'resources/dist',
+    outDir: 'dist',
     assetsDir: '',
     rollupOptions: {
       output: {

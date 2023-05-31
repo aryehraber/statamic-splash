@@ -17,11 +17,11 @@ class SplashServiceProvider extends AddonServiceProvider
     ];
 
     protected $scripts = [
-        __DIR__.'/../resources/dist/splash-fieldtype.js',
+        __DIR__.'/../dist/splash-fieldtype.js',
     ];
 
     protected $stylesheets = [
-        __DIR__.'/../resources/dist/splash-fieldtype.css',
-        __DIR__.'/../resources/dist/splash-fieldtype2.css',
+        __DIR__.'/../dist/splash-fieldtype.css',
+        __DIR__.'/../dist/splash-fieldtype2.css',
     ];
 }
