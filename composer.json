@@ -10,7 +10,7 @@
     "homepage": "https://github.com/aryehraber/statamic-splash",
     "license": "MIT",
     "require": {
-        "statamic/cms": "^3.0|^4.0"
+        "statamic/cms": "^4.0"
     },
     "autoload": {
         "psr-4": {
