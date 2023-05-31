@@ -20,7 +20,6 @@
         <div class="relative flex flex-col h-full">
           <image-viewer
             :image="selectedImage"
-            :thumb-width="thumbWidth"
             :thumb-sizes="thumbSizes"
             @close="closeImage"
             v-if="selectedImage"
@@ -31,10 +30,14 @@
 
             <div class="hidden md:flex ml-1">
               <button
-                class="btn btn-icon icon"
-                :class="selectedThumbSize === 'large' ? 'icon-resize-100' : 'icon-resize-full-screen'"
+                class="btn btn-sm"
                 @click="selectedThumbSize = selectedThumbSize === 'large' ? 'small' : 'large'"
-              />
+              >
+                <svg-icon
+                  class="h-4 w-4"
+                  :name="selectedThumbSize === 'large' ? 'shrink-all' : 'expand'"
+                />
+              </button>
             </div>
           </div>
 
@@ -44,12 +47,11 @@
             ref="imageContainer"
           >
             <div class="absolute inset-0 p-2">
-              <div class="flex flex-wrap -mx-1">
+              <div class="asset-grid-listing" :class="thumbGrid">
                 <thumb
                   v-for="image in filteredImages"
                   :key="image.id"
                   :image="image"
-                  :width="thumbWidth"
                   :sizes="thumbSizes"
                   @open="openImage(image)"
                 />
@@ -74,7 +76,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-end z-20 p-2 bg-grey-20 border-t">
+        <div class="flex items-center justify-end z-20 p-2 bg-gray-200 border-t">
           <button class="btn" @click="closeBrowser">
             Cancel
           </button>
@@ -136,10 +138,10 @@ export default {
         ? this.images.length && this.hasNextPage
         : true
     },
-    thumbWidth() {
+    thumbGrid() {
       const sizes = {
-        small: 'w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-1/6',
-        large: 'w-1/2 sm:w-1/3',
+        small: 'splash-grid-cols-2 sm:splash-grid-cols-3 md:splash-grid-cols-4 lg:splash-grid-cols-5 xl:splash-grid-cols-6',
+        large: 'splash-grid-cols-2 sm:splash-grid-cols-3',
       }
 
       return sizes[this.selectedThumbSize]

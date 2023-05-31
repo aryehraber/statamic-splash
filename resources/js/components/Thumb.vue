@@ -1,20 +1,21 @@
 <template>
-  <div class="mb-2 px-1 group" :class="width">
+  <div class="group">
     <button
-      class="w-full relative text-center ratio-4:3"
-      style="cursor: zoom-in;"
+      class="relative w-full text-center"
+      style="padding-top: 75%; cursor: zoom-in;"
+      :title="image.description"
       @click="$emit('open')"
     >
-      <div class="absolute inset-0 z-0 flex items-center justify-center">
+      <div class="absolute inset-0 flex items-center justify-center">
         <div
-          class="absolute inset-0 -z-1 rounded opacity-75"
+          class="absolute inset-0 z-0 rounded opacity-50"
           :style="{ background: image.color }"
         />
 
-        <loading-graphic class="absolute inset-0 -z-1 flex flex-col items-center justify-center text-center opacity-25" text="" />
+        <loading-graphic class="absolute inset-0 z-0 flex flex-col items-center justify-center text-center opacity-50" text="" />
 
         <img
-          class="asset-thumbnail w-full h-full rounded lazyload"
+          class="asset-thumbnail z-10 w-full h-full rounded lazyload"
           style="object-fit: cover; object-position: center;"
           :data-srcset="thumbUrl"
           :data-sizes="sizes"
@@ -22,19 +23,12 @@
         >
       </div>
     </button>
-
-    <div
-      class="text-3xs text-center text-grey-70 pt-sm w-full text-truncate"
-      :title="image.description"
-      v-text="image.description"
-      v-if="image.description"
-    />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['image', 'width', 'sizes'],
+  props: ['image', 'sizes'],
 
   computed: {
     thumbUrl() {
