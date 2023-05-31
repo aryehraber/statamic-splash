@@ -1,7 +1,7 @@
 <template>
-  <div class="absolute inset-0 z-20 bg-white p-2" >
+  <div class="absolute inset-0 z-20 bg-white p-2">
     <div
-      class="relative w-full h-full"
+      class="relative w-full h-full bg-white"
       style="cursor: zoom-out;"
       @click="$emit('close')"
     >
