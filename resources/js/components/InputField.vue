@@ -12,10 +12,9 @@
           <img :src="value.urls.small" :alt="value.description" :title="value.description">
 
           <div class="asset-controls">
-            <button
-              class="btn btn-icon icon icon-trash"
-              @click="$emit('remove')"
-            />
+            <button class="btn btn-icon" @click="$emit('remove')">
+              <svg-icon name="trash" class="w-4 h-4"/>
+            </button>
           </div>
         </div>
       </div>
