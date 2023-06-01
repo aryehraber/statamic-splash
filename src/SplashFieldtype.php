@@ -30,6 +30,7 @@ class SplashFieldtype extends Fieldtype
         ];
 
         return collect($default)
+            ->merge(config('splash.data_saved', []))
             ->mapWithKeys(fn ($key) => [$key => Arr::get($data, $key)])
             ->undot()
             ->all();
