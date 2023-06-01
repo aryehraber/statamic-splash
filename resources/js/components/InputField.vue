@@ -9,7 +9,11 @@
     <div :title="value.description" class="asset-tile is-image" tabindex="0">
       <div class="asset-thumb-container">
         <div class="asset-thumb">
-          <img :src="value.urls.small" :alt="value.description" :title="value.description">
+          <img
+            :src="`${value.urls.raw}&crop=entropy&cs=tinysrgb&fit=max&q=80&w=400`"
+            :alt="value.description"
+            :title="value.description"
+          >
 
           <div class="asset-controls">
             <button class="btn btn-icon" @click="$emit('remove')" :alt="__('Remove')">
