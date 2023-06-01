@@ -34,7 +34,7 @@ fields:
       type: splash
 ```
 
-After selecting an image and saving your content, the full Unsplash response data will be accessible in templates using Antlers. The image itself *will not* be saved inside your Asset Container, instead you will be referencing images using Unsplash's CDN, also called Hotlinking (this is required by their [API Guidelines](https://help.unsplash.com/en/articles/2511271-guideline-hotlinking-images)).
+After selecting an image and saving your content, the Unsplash response data will be accessible in templates using Antlers ([more on saved photo data below](#photo-data)). The image itself *will not* be saved inside your Asset Container, instead you will be referencing images using Unsplash's CDN, also called Hotlinking (this is required by their [API Guidelines](https://help.unsplash.com/en/articles/2511271-guideline-hotlinking-images)).
 
 The benefit here is that it takes a significant load off your server, since images are often the heaviest assets on a page. Additionally, since Unsplash's CDN is spread worldwide, images will load super fast regardless of the visitor's location.
 
@@ -107,6 +107,41 @@ Since the photo's meta data is stored inside your content, you can also loop ove
   <!-- access available user data -->
 {{ /hero_image:user }}
 ```
+
+---
+
+### Photo Data
+
+By default, only the required photo data is saved from the Unsplash response data for this addon to work. You may specify additional keys using dot notation in the `data_saved` config option inside `config/splash.php`.
+
+**Example**
+
+```php
+<?php
+
+return [
+    'data_saved' => [
+        'description',
+        'links',
+        'user.username',
+        'user.bio',
+    ],
+    // ...
+];
+```
+
+Alternatively, if you would like to save ALL photo data, you may use the `all` option instead.
+
+```php
+<?php
+
+return [
+    'data_saved' => 'all',
+    // ...
+];
+```
+
+---
 
 ### Parameters
 
