@@ -22,6 +22,10 @@ class SplashFieldtype extends Fieldtype
             return $data;
         }
 
+        if (config('splash.data_saved') === 'all') {
+            return $data;
+        }
+
         $default = [
             'description',
             'urls.raw',
