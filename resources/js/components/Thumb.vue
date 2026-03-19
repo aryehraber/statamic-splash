@@ -26,16 +26,15 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['image', 'sizes'],
+<script setup>
+import { computed } from 'vue'
 
-  computed: {
-    thumbUrl() {
-      const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+const props = defineProps(['image', 'sizes'])
 
-      return widths.map(width => `${this.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
-    },
-  },
-}
+const thumbUrl = computed(() => {
+  const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+  return widths.map(width => `${props.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+})
+
+const emit = defineEmits(['open'])
 </script>

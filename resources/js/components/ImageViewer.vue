@@ -26,21 +26,20 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['image', 'thumbSizes'],
+<script setup>
+import { computed } from 'vue'
 
-  computed: {
-    thumbUrl() {
-      const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+const props = defineProps(['image', 'thumbSizes'])
 
-      return widths.map(width => `${this.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
-    },
-    imageUrl() {
-      const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1296, 1400, 1600, 1800, 2000, 2200, 2400]
+const thumbUrl = computed(() => {
+  const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+  return widths.map(width => `${props.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+})
 
-      return widths.map(width => `${this.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
-    },
-  },
-}
+const imageUrl = computed(() => {
+  const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1296, 1400, 1600, 1800, 2000, 2200, 2400]
+  return widths.map(width => `${props.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+})
+
+const emit = defineEmits(['close'])
 </script>

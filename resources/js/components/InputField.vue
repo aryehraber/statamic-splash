@@ -34,8 +34,7 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['value'],
-}
+<script setup>
+const props = defineProps(['value'])
+const emit = defineEmits(['open', 'remove'])
 </script>

@@ -2,6 +2,12 @@
 
 **Browse Unsplash images right from the CP.**
 
+## Compatibility
+
+- Statamic 4.x
+- Statamic 5.x  
+- Statamic 6.x (Vue 3 compatible)
+
 ## Installation
 
 Install the addon via composer:

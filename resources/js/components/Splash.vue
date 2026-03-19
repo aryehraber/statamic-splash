@@ -91,192 +91,197 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
+import { useFieldtype } from '../composables/fieldtype'
 import Thumb from './Thumb.vue'
 import InputField from './InputField.vue'
 import ImageViewer from './ImageViewer.vue'
 
-export default {
-  mixins: [Fieldtype],
+// Use Statamic's fieldtype composable
+const { meta, config, value } = useFieldtype()
 
-  components: {
-    Thumb,
-    InputField,
-    ImageViewer,
-  },
+// Reactive data
+const loading = ref(false)
+const error = ref(null)
+const showBrowser = ref(false)
+const searchQuery = ref('')
+const searchPage = ref(1)
+const images = ref([])
+const hasNextPage = ref(null)
+const selectedImage = ref(null)
+const selectedThumbSize = ref('small')
+const imageContainer = ref(null)
+const loadMoreButton = ref(null)
 
-  data() {
-    return {
-      loading: false,
-      error: null,
-      showBrowser: false,
-      searchQuery: '',
-      searchPage: 1,
-      images: [],
-      hasNextPage: null,
-      selectedImage: null,
-      selectedThumbSize: 'small',
+// Emits
+const emit = defineEmits(['input'])
+
+// Computed properties
+const filteredImages = computed(() => {
+  const ids = []
+  return images.value.filter(({ id }) => {
+    if (ids.indexOf(id) !== -1) return
+    ids.push(id)
+    return true
+  })
+})
+
+const canLoadMore = computed(() => {
+  if (searchPage.value === 1 && loading.value) return
+  return searchQuery.value
+    ? images.value.length && hasNextPage.value
+    : true
+})
+
+const thumbGrid = computed(() => {
+  const sizes = {
+    small: 'splash-grid-cols-2 sm:splash-grid-cols-3 md:splash-grid-cols-4 lg:splash-grid-cols-5 xl:splash-grid-cols-6',
+    large: 'splash-grid-cols-2 sm:splash-grid-cols-3',
+  }
+  return sizes[selectedThumbSize.value]
+})
+
+const thumbSizes = computed(() => {
+  const sizes = {
+    small: '(max-width: 575px) 50vw, (max-width: 768px) 25vw, (min-width: 1000px) 15vw',
+    large: '(max-width: 575px) 50vw, (max-width: 768px) 33vw, (min-width: 1000px) 25vw',
+  }
+  return sizes[selectedThumbSize.value]
+})
+
+// Methods
+const search = async (loadMore = false) => {
+  if (loading.value) return
+
+  loading.value = true
+  error.value = null
+
+  if (loadMore) {
+    searchPage.value++
+  }
+
+  const baseUrl = 'https://api.unsplash.com'
+  const url = searchQuery.value ? '/search/photos' : '/photos'
+
+  const params = {
+    client_id: meta.value.access_key,
+    query: searchQuery.value,
+    page: searchPage.value,
+    per_page: 30,
+  }
+
+  try {
+    const response = await window.Statamic.$axios.get(`${baseUrl}${url}`, { params })
+    const data = response.data
+    const results = data.results || data
+
+    images.value = loadMore ? images.value.concat(results) : results
+    hasNextPage.value = data.total_pages ? data.total_pages > searchPage.value : null
+  } catch (err) {
+    if (err.response) {
+      const { data, status } = err.response
+      error.value = { data, status }
     }
-  },
-
-  computed: {
-    filteredImages() {
-      const ids = []
-
-      return this.images.filter(({ id }) => {
-        if (ids.indexOf(id) !== -1) return
-
-        ids.push(id)
-
-        return true
-      })
-    },
-    canLoadMore() {
-      if (this.searchPage === 1 && this.loading) return
-
-      return this.searchQuery
-        ? this.images.length && this.hasNextPage
-        : true
-    },
-    thumbGrid() {
-      const sizes = {
-        small: 'splash-grid-cols-2 sm:splash-grid-cols-3 md:splash-grid-cols-4 lg:splash-grid-cols-5 xl:splash-grid-cols-6',
-        large: 'splash-grid-cols-2 sm:splash-grid-cols-3',
-      }
-
-      return sizes[this.selectedThumbSize]
-    },
-    thumbSizes() {
-      const sizes = {
-        small: '(max-width: 575px) 50vw, (max-width: 768px) 25vw, (min-width: 1000px) 15vw',
-        large: '(max-width: 575px) 50vw, (max-width: 768px) 33vw, (min-width: 1000px) 25vw',
-      }
-
-      return sizes[this.selectedThumbSize]
-    },
-  },
-
-  methods: {
-    search(loadMore = false) {
-      if (this.loading) return
-
-      this.loading = true
-      this.error = null
-
-      if (loadMore) {
-        this.searchPage++
-      }
-
-      const baseUrl = 'https://api.unsplash.com'
-      const url = this.searchQuery ? '/search/photos' : '/photos'
-
-      const params = {
-        client_id: this.meta.access_key,
-        query: this.searchQuery,
-        page: this.searchPage,
-        per_page: 30,
-      }
-
-      this.$axios.get(`${baseUrl}${url}`, { params })
-        .then(({ data }) => {
-          const results = data.results || data
-
-          this.images = loadMore ? this.images.concat(results) : results
-          this.hasNextPage = data.total_pages ? data.total_pages > this.searchPage : null
-          this.loading = false
-        })
-        .catch(error => {
-          if (error.response) {
-            const { data, status } = error.response
-
-            this.error = { data, status }
-          }
-        })
-    },
-    loadMore() {
-      this.search(true)
-    },
-    openBrowser() {
-      this.showBrowser = true
-      this.search()
-    },
-    closeBrowser() {
-      this.showBrowser = false
-      this.images = []
-      this.searchQuery = ''
-      this.searchPage = 1
-      this.hasNextPage = null
-      this.selectedImage = null
-    },
-    openImage(image) {
-      this.selectedImage = image
-    },
-    closeImage() {
-      this.selectedImage = null
-    },
-    select() {
-      this.$emit('input', this.selectedImage)
-      this.pingUnsplash()
-      this.closeBrowser()
-    },
-    removeImage() {
-      this.selectedImage = null
-      this.$emit('input', null)
-    },
-    setDefaultThumbSize() {
-      if (this.config.thumb_size !== undefined) {
-        this.selectedThumbSize = this.config.thumb_size
-      } else if (this.meta.default_thumb_size !== undefined) {
-        this.selectedThumbSize = this.meta.default_thumb_size
-      }
-    },
-    initInfiniteScroll() {
-      const imageContainer = this.$refs.imageContainer
-
-      if (! imageContainer) return
-
-      imageContainer.addEventListener('scroll', _.throttle(() => {
-        if (this.loading) return
-
-        const offset = 300
-        const loadMoreButton = this.$refs.loadMoreButton
-
-        if (! loadMoreButton) return
-
-        if (imageContainer.scrollTop + imageContainer.clientHeight >= imageContainer.scrollHeight - offset) {
-          this.loadMore()
-        }
-      }, 250))
-    },
-    pingUnsplash() {
-      if (! this.selectedImage) return
-
-      const params = { client_id: this.meta.access_key }
-
-      this.$axios.get(this.selectedImage.links.download_location, { params })
-    },
-  },
-
-  watch: {
-    showBrowser(show) {
-      if (show) {
-        setTimeout(this.initInfiniteScroll, 100)
-      }
-    },
-    searchQuery() {
-      this.images = []
-      this.searchPage = 1
-      this.hasNextPage = null
-      this.selectedImage = null
-
-      this.search()
-    },
-  },
-
-  created() {
-    this.setDefaultThumbSize()
+  } finally {
+    loading.value = false
   }
 }
+
+const loadMore = () => {
+  search(true)
+}
+
+const openBrowser = () => {
+  showBrowser.value = true
+  search()
+}
+
+const closeBrowser = () => {
+  showBrowser.value = false
+  images.value = []
+  searchQuery.value = ''
+  searchPage.value = 1
+  hasNextPage.value = null
+  selectedImage.value = null
+}
+
+const openImage = (image) => {
+  selectedImage.value = image
+}
+
+const closeImage = () => {
+  selectedImage.value = null
+}
+
+const select = () => {
+  emit('input', selectedImage.value)
+  pingUnsplash()
+  closeBrowser()
+}
+
+const removeImage = () => {
+  selectedImage.value = null
+  emit('input', null)
+}
+
+const setDefaultThumbSize = () => {
+  if (config.value.thumb_size !== undefined) {
+    selectedThumbSize.value = config.value.thumb_size
+  } else if (meta.value.default_thumb_size !== undefined) {
+    selectedThumbSize.value = meta.value.default_thumb_size
+  }
+}
+
+const initInfiniteScroll = () => {
+  if (!imageContainer.value) return
+
+  imageContainer.value.addEventListener('scroll', _.throttle(() => {
+    if (loading.value) return
+
+    const offset = 300
+    const button = loadMoreButton.value
+
+    if (!button) return
+
+    if (imageContainer.value.scrollTop + imageContainer.value.clientHeight >= imageContainer.value.scrollHeight - offset) {
+      loadMore()
+    }
+  }, 250))
+}
+
+const pingUnsplash = async () => {
+  if (!selectedImage.value) return
+
+  const params = { client_id: meta.value.access_key }
+  try {
+    await window.Statamic.$axios.get(selectedImage.value.links.download_location, { params })
+  } catch (error) {
+    // Silently fail for ping
+  }
+}
+
+// Watchers
+watch(showBrowser, (show) => {
+  if (show) {
+    nextTick(() => {
+      setTimeout(initInfiniteScroll, 100)
+    })
+  }
+})
+
+watch(searchQuery, () => {
+  images.value = []
+  searchPage.value = 1
+  hasNextPage.value = null
+  selectedImage.value = null
+  search()
+})
+
+// Lifecycle
+onMounted(() => {
+  setDefaultThumbSize()
+})
 </script>
 
 <style>

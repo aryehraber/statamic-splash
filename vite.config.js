@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin'
-import vue from '@vitejs/plugin-vue2'
+import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   build: {
@@ -8,6 +7,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: '',
     rollupOptions: {
+      input: 'resources/js/splash.js',
       output: {
         entryFileNames: '[name]-fieldtype.js',
         assetFileNames: '[name]-fieldtype.[ext]'
@@ -15,13 +15,11 @@ export default defineConfig({
     }
   },
   plugins: [
-    laravel({
-      input: [
-        'resources/js/splash.js',
-        'resources/css/splash.css'
-      ],
-    }),
     vue(),
   ],
-
+  resolve: {
+    alias: {
+      'vue': 'vue/dist/vue.esm-bundler.js'
+    }
+  }
 })
