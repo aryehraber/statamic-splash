@@ -112,6 +112,7 @@ export default {
       showBrowser: false,
       searchQuery: '',
       searchPage: 1,
+      searchToken: 0,
       images: [],
       hasNextPage: null,
       selectedImage: null,
@@ -158,7 +159,13 @@ export default {
 
   methods: {
     search(loadMore = false) {
-      if (this.loading) return
+      // Only load-more is guarded against a request already being in flight.
+      // Guarding every search drops the query the user actually finished
+      // typing, because the debounced call lands while the previous request
+      // is still open.
+      if (loadMore && this.loading) return
+
+      const token = ++this.searchToken
 
       this.loading = true
       this.error = null
@@ -179,6 +186,9 @@ export default {
 
       this.$axios.get(`${baseUrl}${url}`, { params })
         .then(({ data }) => {
+          // A newer search has been started since; its results win.
+          if (token !== this.searchToken) return
+
           const results = data.results || data
 
           this.images = loadMore ? this.images.concat(results) : results
@@ -186,11 +196,15 @@ export default {
           this.loading = false
         })
         .catch(error => {
+          if (token !== this.searchToken) return
+
           if (error.response) {
             const { data, status } = error.response
 
             this.error = { data, status }
           }
+
+          this.loading = false
         })
     },
     loadMore() {
