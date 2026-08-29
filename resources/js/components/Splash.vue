@@ -1,98 +1,74 @@
 <template>
-  <div class="text-sm" v-if="! meta.access_key">
-    <code>Missing Unsplash API Access Key</code>
-  </div>
+  <Alert v-if="!meta.access_key" variant="error" :text="__('Missing Unsplash API Access Key')" />
 
   <div v-else>
-    <input-field
-      :value="value"
-      @open="openBrowser"
-      @remove="removeImage"
-    />
+    <InputField :value="value" @open="openBrowser" @remove="removeImage" />
 
-    <stack
-      name="unsplash-browser"
-      v-model:open="showBrowser"
-      @closed="resetBrowser"
-    >
-      <div class="flex flex-col h-full bg-white">
-
-        <div class="relative flex flex-col h-full">
-          <image-viewer
+    <Stack v-model:open="showBrowser" inset :show-close-button="false" @closed="resetBrowser">
+      <div class="flex h-full min-h-0 flex-col bg-white dark:bg-gray-900">
+        <div class="relative flex min-h-0 flex-1 flex-col">
+          <ImageViewer
+            v-if="selectedImage"
             :image="selectedImage"
             :thumb-sizes="thumbSizes"
             @close="closeImage"
-            v-if="selectedImage"
           />
 
-          <div class="flex items-center justify-between w-full p-2 bg-white">
-            <data-list-search v-model="searchQuery" placeholder="Search Unsplash..." />
+          <div class="flex items-center gap-3 border-b border-gray-200 p-3 dark:border-gray-700">
+            <Input
+              v-model="searchQuery"
+              class="flex-1"
+              icon="magnifying-glass"
+              :placeholder="__('Search Unsplash...')"
+            />
 
-            <div class="hidden md:flex ml-1">
-              <button
-                class="btn btn-sm"
-                @click="selectedThumbSize = selectedThumbSize === 'large' ? 'small' : 'large'"
-              >
-                <svg-icon
-                  class="h-4 w-4"
-                  :name="selectedThumbSize === 'large' ? 'shrink-all' : 'expand'"
-                />
-              </button>
-            </div>
+            <Button
+              :icon="selectedThumbSize === 'large' ? 'shrink' : 'expand-all'"
+              :aria-label="__('Toggle thumbnail size')"
+              @click="selectedThumbSize = selectedThumbSize === 'large' ? 'small' : 'large'"
+            />
           </div>
 
-          <div
-            class="relative z-10 flex-1 w-full h-full"
-            :class="{ 'overflow-y-scroll': ! selectedImage }"
-            ref="imageContainer"
-          >
-            <div class="absolute inset-0 p-2">
-              <div class="asset-grid-listing" :class="thumbGrid">
-                <thumb
-                  v-for="image in filteredImages"
-                  :key="image.id"
-                  :image="image"
-                  :sizes="thumbSizes"
-                  @open="openImage(image)"
-                />
-              </div>
-
-              <div class="z-20 p-2 pb-4 text-center" v-if="canLoadMore">
-                <button
-                  class="btn"
-                  @click="loadMore"
-                  :disabled="loading"
-                  v-text="loading ? 'Loading...' : 'Load More'"
-                  ref="loadMoreButton"
-                />
-              </div>
-
-              <div
-                class="pb-5 font-medium text-center text-red"
-                v-text="`Unsplash Error: ${error.data} (${error.status})`"
-                v-if="error"
+          <div ref="imageContainer" class="flex-1 overflow-y-auto p-3">
+            <div class="grid gap-3" :data-splash-grid="selectedThumbSize">
+              <Thumb
+                v-for="image in filteredImages"
+                :key="image.id"
+                :image="image"
+                :sizes="thumbSizes"
+                @open="openImage(image)"
               />
             </div>
+
+            <div v-if="loading" class="flex items-center justify-center gap-2 p-4 text-sm text-gray-600 dark:text-gray-400">
+              <Icon name="loading" class="size-4" />
+              <span>{{ __('Loading...') }}</span>
+            </div>
+
+            <div v-else-if="canLoadMore" class="p-4 text-center">
+              <Button ref="loadMoreButton" :text="__('Load More')" @click="loadMore" />
+            </div>
+
+            <Alert
+              v-if="error"
+              class="mt-3"
+              variant="error"
+              :text="`Unsplash Error: ${error.data} (${error.status})`"
+            />
           </div>
         </div>
 
-        <div class="flex items-center justify-end z-20 p-2 bg-gray-200 border-t">
-          <button class="btn" @click="closeBrowser">
-            Cancel
-          </button>
-
-          <button class="btn-primary ml-1" @click="select" :disabled="! selectedImage">
-            Select
-          </button>
+        <div class="flex items-center justify-end gap-3 border-t border-gray-200 bg-gray-100 px-4 py-3 dark:border-gray-700 dark:bg-gray-850">
+          <Button variant="ghost" :text="__('Cancel')" @click="closeBrowser" />
+          <Button variant="primary" :text="__('Select')" :disabled="!selectedImage" @click="select" />
         </div>
-
       </div>
-    </stack>
+    </Stack>
   </div>
 </template>
-
 <script>
 import { FieldtypeMixin as Fieldtype } from '@statamic/cms'
+import { Alert, Button, Icon, Input, Stack } from '@statamic/cms/ui'
 import Thumb from './Thumb.vue'
 import InputField from './InputField.vue'
 import ImageViewer from './ImageViewer.vue'
@@ -115,6 +91,11 @@ export default {
     Thumb,
     InputField,
     ImageViewer,
+    Alert,
+    Button,
+    Icon,
+    Input,
+    Stack,
   },
 
   data() {
@@ -149,14 +130,6 @@ export default {
       return this.searchQuery
         ? this.images.length && this.hasNextPage
         : true
-    },
-    thumbGrid() {
-      const sizes = {
-        small: 'splash-grid-cols-2 sm:splash-grid-cols-3 md:splash-grid-cols-4 lg:splash-grid-cols-5 xl:splash-grid-cols-6',
-        large: 'splash-grid-cols-2 sm:splash-grid-cols-3',
-      }
-
-      return sizes[this.selectedThumbSize]
     },
     thumbSizes() {
       const sizes = {
@@ -262,6 +235,14 @@ export default {
         }
       }, 250))
     },
+    runSearch() {
+      this.images = []
+      this.searchPage = 1
+      this.hasNextPage = null
+      this.selectedImage = null
+
+      this.search()
+    },
     pingUnsplash() {
       if (! this.selectedImage) return
 
@@ -278,12 +259,8 @@ export default {
       }
     },
     searchQuery() {
-      this.images = []
-      this.searchPage = 1
-      this.hasNextPage = null
-      this.selectedImage = null
-
-      this.search()
+      clearTimeout(this.searchDebounce)
+      this.searchDebounce = setTimeout(() => this.runSearch(), 350)
     },
   },
 
@@ -294,6 +271,31 @@ export default {
 </script>
 
 <style>
-  .-z-1 { z-index: -1 !important; }
-  .lazyloaded { transition: all 0.3s ease; }
+/*
+ * Deliberately unlayered.
+ *
+ * The control panel declares its cascade layers as
+ *
+ *   @layer base, addon-theme, addon-utilities, components, utilities, ui, ui-states;
+ *
+ * so its own `utilities` layer sits AFTER `addon-utilities`, which is where an
+ * addon's Tailwind output lands. The control panel uses grid-cols-2 itself, so
+ * its plain .grid-cols-2 beats any .md\:grid-cols-4 this addon generates,
+ * regardless of specificity — the grid would be stuck at two columns. The same
+ * trap catches any responsive variant whose base class the control panel also
+ * uses.
+ *
+ * Unlayered rules outrank every layered one, so the responsive grid is written
+ * out here instead. Breakpoints match the control panel's Tailwind defaults.
+ */
+[data-splash-grid] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+@media (min-width: 640px)  { [data-splash-grid="small"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 768px)  { [data-splash-grid="small"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { [data-splash-grid="small"] { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { [data-splash-grid="small"] { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+@media (min-width: 640px)  { [data-splash-grid="large"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.lazyloaded { transition: opacity 0.3s ease; }
 </style>

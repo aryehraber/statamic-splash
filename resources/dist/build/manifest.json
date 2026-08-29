@@ -1,16 +1,16 @@
 {
   "resources/css/splash.css": {
-    "file": "assets/splash-BaDt_HXg.css",
+    "file": "assets/splash-ZCNespWP.css",
     "src": "resources/css/splash.css",
     "isEntry": true
   },
   "resources/js/splash.js": {
-    "file": "assets/splash-B9gP6HbL.js",
+    "file": "assets/splash-8Gd1AoYm.js",
     "name": "splash",
     "src": "resources/js/splash.js",
     "isEntry": true,
     "css": [
-      "assets/splash-hSyeOZ7K.css"
+      "assets/splash-lVOlT_iO.css"
     ]
   }
 }
