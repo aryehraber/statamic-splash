@@ -1,27 +1,18 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin'
-import vue from '@vitejs/plugin-vue2'
+import statamic from '@statamic/cms/vite-plugin'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  build: {
-    manifest: false,
-    outDir: 'dist',
-    assetsDir: '',
-    rollupOptions: {
-      output: {
-        entryFileNames: '[name]-fieldtype.js',
-        assetFileNames: '[name]-fieldtype.[ext]'
-      }
-    }
-  },
   plugins: [
     laravel({
       input: [
         'resources/js/splash.js',
         'resources/css/splash.css'
       ],
+      publicDirectory: 'resources/dist',
     }),
-    vue(),
+    statamic(),
+    tailwindcss(),
   ],
-
 })

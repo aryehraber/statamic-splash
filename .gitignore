@@ -2,6 +2,3 @@
 .env
 node_modules/
 vendor/
-mix-manifest.json
-webpack.config.js
-webpack.mix.js

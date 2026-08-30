@@ -1,45 +1,51 @@
 <template>
-  <div class="absolute inset-0 z-20 bg-white p-2">
-    <div
-      class="relative w-full h-full bg-white"
-      style="cursor: zoom-out;"
-      @click="$emit('close')"
-    >
-      <img
-        class="absolute z-10 w-full h-full lazyload"
-        style="object-fit: contain;"
-        :data-srcset="imageUrl"
-        data-sizes="(min-width: 1000px) 60vw, (min-width: 1200px) 70vw, (min-width: 1400px) 80vw, 100vw"
-        :alt="image.description"
-      >
+  <div class="absolute inset-0 z-10 bg-white p-2 dark:bg-gray-900">
+    <div class="relative size-full cursor-zoom-out" @click="$emit('close')">
+      <div class="absolute inset-0 flex items-center justify-center">
+        <Icon name="loading" class="size-6 text-gray-500" />
+      </div>
 
+      <!-- The thumbnail sits underneath at low resolution so something is
+        visible immediately, with the full-size image lazyloaded over it. -->
       <img
-        class="absolute z-0 w-full h-full"
-        style="object-fit: contain;"
+        class="absolute size-full object-contain"
         :srcset="thumbUrl"
         :sizes="thumbSizes"
         :alt="image.description"
-      >
+      />
 
-      <loading-graphic class="absolute inset-0 z-5 flex flex-col items-center justify-center text-center" text="" />
+      <img
+        class="lazyload absolute size-full object-contain"
+        :data-srcset="imageUrl"
+        data-sizes="(min-width: 1000px) 60vw, (min-width: 1200px) 70vw, (min-width: 1400px) 80vw, 100vw"
+        :alt="image.description"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { Icon } from '@statamic/cms/ui'
+
+const srcset = (image, widths) =>
+  widths.map((width) => `${image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+
 export default {
+  components: { Icon },
+
   props: ['image', 'thumbSizes'],
+
+  emits: ['close'],
 
   computed: {
     thumbUrl() {
-      const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
-
-      return widths.map(width => `${this.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+      return srcset(this.image, [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200])
     },
     imageUrl() {
-      const widths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1296, 1400, 1600, 1800, 2000, 2200, 2400]
-
-      return widths.map(width => `${this.image.urls.raw}&q=60&auto=format&w=${width} ${width}w`).join(', ')
+      return srcset(this.image, [
+        100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1296, 1400, 1600, 1800, 2000, 2200,
+        2400,
+      ])
     },
   },
 }

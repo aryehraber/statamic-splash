@@ -1,4 +1,6 @@
 import 'lazysizes'
 import Splash from './components/Splash.vue'
 
-Statamic.$components.register('splash-fieldtype', Splash)
+Statamic.booting(() => {
+    Statamic.$components.register('splash-fieldtype', Splash)
+})

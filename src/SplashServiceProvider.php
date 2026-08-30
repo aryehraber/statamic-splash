@@ -16,12 +16,11 @@ class SplashServiceProvider extends AddonServiceProvider
         SplashTags::class,
     ];
 
-    protected $scripts = [
-        __DIR__.'/../dist/splash-fieldtype.js',
-    ];
-
-    protected $stylesheets = [
-        __DIR__.'/../dist/splash-fieldtype.css',
-        __DIR__.'/../dist/splash-fieldtype2.css',
+    protected $vite = [
+        'input' => [
+            'resources/js/splash.js',
+            'resources/css/splash.css',
+        ],
+        'publicDirectory' => 'resources/dist',
     ];
 }
