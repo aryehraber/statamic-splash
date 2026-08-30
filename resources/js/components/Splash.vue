@@ -46,7 +46,7 @@
             </div>
 
             <div v-else-if="canLoadMore" class="p-4 text-center">
-              <Button ref="loadMoreButton" :text="__('Load More')" @click="loadMore" />
+              <Button :text="__('Load More')" @click="loadMore" />
             </div>
 
             <Alert
@@ -73,13 +73,28 @@ import Thumb from './Thumb.vue'
 import InputField from './InputField.vue'
 import ImageViewer from './ImageViewer.vue'
 
+// Leading and trailing, like lodash's default. Without a trailing call, a
+// threshold crossed part-way through the window is never re-evaluated once the
+// events stop.
 function throttle(fn, delay) {
   let lastCall = 0
+  let timer = null
+
   return function (...args) {
     const now = Date.now()
-    if (now - lastCall >= delay) {
+    const remaining = delay - (now - lastCall)
+
+    if (remaining <= 0) {
+      clearTimeout(timer)
+      timer = null
       lastCall = now
       fn.apply(this, args)
+    } else if (! timer) {
+      timer = setTimeout(() => {
+        lastCall = Date.now()
+        timer = null
+        fn.apply(this, args)
+      }, remaining)
     }
   }
 }
@@ -179,6 +194,10 @@ export default {
           this.images = loadMore ? this.images.concat(results) : results
           this.hasNextPage = data.total_pages ? data.total_pages > this.searchPage : null
           this.loading = false
+
+          // The viewport may still be at the bottom, and no further scroll event
+          // is coming if the reader stopped moving while this was in flight.
+          this.$nextTick(() => this.maybeLoadMore())
         })
         .catch(error => {
           if (token !== this.searchToken) return
@@ -231,23 +250,25 @@ export default {
         this.selectedThumbSize = this.meta.default_thumb_size
       }
     },
+    maybeLoadMore() {
+      if (this.loading || ! this.canLoadMore) return
+
+      const container = this.$refs.imageContainer
+
+      if (! container) return
+
+      const offset = 300
+
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - offset) {
+        this.loadMore()
+      }
+    },
     initInfiniteScroll() {
-      const imageContainer = this.$refs.imageContainer
+      const container = this.$refs.imageContainer
 
-      if (! imageContainer) return
+      if (! container) return
 
-      imageContainer.addEventListener('scroll', throttle(() => {
-        if (this.loading) return
-
-        const offset = 300
-        const loadMoreButton = this.$refs.loadMoreButton
-
-        if (! loadMoreButton) return
-
-        if (imageContainer.scrollTop + imageContainer.clientHeight >= imageContainer.scrollHeight - offset) {
-          this.loadMore()
-        }
-      }, 250))
+      container.addEventListener('scroll', throttle(() => this.maybeLoadMore(), 250))
     },
     runSearch() {
       this.images = []
