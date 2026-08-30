@@ -22,7 +22,7 @@ class SplashTags extends Tags
 
     public function wildcard($handle)
     {
-        $this->setImage(Arr::get($this->context->toArray(), $handle));
+        $this->setImage(Arr::get($this->context, $handle));
 
         return $this->image();
     }
