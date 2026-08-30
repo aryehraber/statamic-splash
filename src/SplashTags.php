@@ -2,6 +2,7 @@
 
 namespace AryehRaber\Splash;
 
+use Illuminate\Support\Arr;
 use Statamic\Tags\Tags;
 use Statamic\Fields\Value;
 
@@ -21,7 +22,7 @@ class SplashTags extends Tags
 
     public function wildcard($handle)
     {
-        $this->setImage(array_get($this->context, $handle));
+        $this->setImage(Arr::get($this->context, $handle));
 
         return $this->image();
     }
